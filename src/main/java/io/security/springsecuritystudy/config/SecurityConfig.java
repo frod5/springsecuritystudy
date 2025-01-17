@@ -31,25 +31,35 @@ public class SecurityConfig {
 			auth.requestMatchers("/security/**").authenticated();
 			auth.requestMatchers("/**").permitAll();
 		});
-		// http.formLogin(form -> form
-		// 	// .loginPage("/loginPage")
-		// 	.loginProcessingUrl("/loginProc")
-		// 	.defaultSuccessUrl("/", true) // successHandler 구현하면 구현한 로직 수행한다.
-		// 	.failureUrl("/failed") // failureHandler 구현하면 구현한 로직 수행한다.
-		// 	.usernameParameter("userId") //form의 id필드의 name명
-		// 	.passwordParameter("passwd") //formdml password필드의 name명
-		// 	// .successHandler((request, response, authentication) -> {
-		// 	// 	System.out.println("Authentication: " + authentication);
-		// 	// 	response.sendRedirect("/home");
-		// 	// })
-		// 	// .failureHandler((request, response, exception) -> {
-		// 	// 	System.out.println("exception: " + exception.getMessage());
-		// 	// 	response.sendRedirect("/loginPage");
-		// 	// })
-		// 	.permitAll()
-		// );
+		http.formLogin(form -> form
+			// .loginPage("/loginPage")
+			.loginProcessingUrl("/loginProc")
+			.defaultSuccessUrl("/", true) // successHandler 구현하면 구현한 로직 수행한다.
+			.failureUrl("/failed") // failureHandler 구현하면 구현한 로직 수행한다.
+			.usernameParameter("userId") //form의 id필드의 name명
+			.passwordParameter("passwd") //formdml password필드의 name명
+			// .successHandler((request, response, authentication) -> {
+			// 	System.out.println("Authentication: " + authentication);
+			// 	response.sendRedirect("/home");
+			// })
+			// .failureHandler((request, response, exception) -> {
+			// 	System.out.println("exception: " + exception.getMessage());
+			// 	response.sendRedirect("/loginPage");
+			// })
+			.permitAll()
+		);
 
-		http.httpBasic(Customizer.withDefaults());
+		// http.httpBasic(Customizer.withDefaults());
+
+		//Remember-me
+		http.rememberMe(rememberMe -> {
+			// rememberMe.alwaysRemember(true);  //항상 rememberMe 여부
+			rememberMe.tokenValiditySeconds(3600); // 토큰유효기간 (초)
+			rememberMe.userDetailsService(this.userDetailsService());
+			rememberMe.rememberMeParameter("remember");
+			rememberMe.rememberMeCookieName("remember");
+			rememberMe.key("security");
+		});
 
 		return http.build();
 	}
