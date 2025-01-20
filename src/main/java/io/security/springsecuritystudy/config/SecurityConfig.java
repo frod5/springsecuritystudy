@@ -101,6 +101,9 @@ public class SecurityConfig {
 			})
 			.permitAll());
 
+		//request cache
+		// http.requestCache()
+
 		return http.build();
 	}
 
