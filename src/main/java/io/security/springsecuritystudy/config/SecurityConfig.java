@@ -29,6 +29,7 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(auth -> {
 			auth.requestMatchers("/security/**").authenticated();
+			auth.requestMatchers("/anonymous").hasRole("GUEST");
 			auth.requestMatchers("/**").permitAll();
 		});
 		http.formLogin(form -> form
@@ -52,14 +53,20 @@ public class SecurityConfig {
 		// http.httpBasic(Customizer.withDefaults());
 
 		//Remember-me
-		http.rememberMe(rememberMe -> {
-			// rememberMe.alwaysRemember(true);  //항상 rememberMe 여부
-			rememberMe.tokenValiditySeconds(3600); // 토큰유효기간 (초)
-			rememberMe.userDetailsService(this.userDetailsService());
-			rememberMe.rememberMeParameter("remember");
-			rememberMe.rememberMeCookieName("remember");
-			rememberMe.key("security");
-		});
+		// http.rememberMe(rememberMe -> {
+		// 	// rememberMe.alwaysRemember(true);  //항상 rememberMe 여부
+		// 	rememberMe.tokenValiditySeconds(3600); // 토큰유효기간 (초)
+		// 	rememberMe.userDetailsService(this.userDetailsService());
+		// 	rememberMe.rememberMeParameter("remember");
+		// 	rememberMe.rememberMeCookieName("remember");
+		// 	rememberMe.key("security");
+		// });
+
+		//Anonymous
+		http.anonymous(anonymous -> anonymous
+			.principal("guest")
+			.authorities("ROLE_GUEST")
+		);
 
 		return http.build();
 	}

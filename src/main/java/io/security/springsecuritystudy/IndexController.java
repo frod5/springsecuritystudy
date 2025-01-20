@@ -30,4 +30,9 @@ public class IndexController {
 	public String security() {
 		return "security";
 	}
+
+	@GetMapping("/anonymous")
+	public String anonymous() {
+		return "anonymous";
+	}
 }
