@@ -1,6 +1,7 @@
 package io.security.springsecuritystudy;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -34,5 +35,10 @@ public class IndexController {
 	@GetMapping("/anonymous")
 	public String anonymous() {
 		return "anonymous";
+	}
+
+	@GetMapping("/logoutSuccess")
+	public String logoutSuccess() {
+		return "logoutSuccess";
 	}
 }
