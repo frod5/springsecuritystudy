@@ -1,10 +1,15 @@
 package io.security.springsecuritystudy.config;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -107,18 +112,31 @@ public class SecurityConfig {
 		//request cache
 		// http.requestCache()
 
-		AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
-		AuthenticationManager authenticationManager = builder.build();
-		AuthenticationManager authenticationManager1 = builder.getObject();
+		// AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+		// AuthenticationManager authenticationManager = builder.build();
+		// AuthenticationManager authenticationManager1 = builder.getObject();
+		//
+		// http.addFilterBefore(this.customAuthenticationFilter(http, authenticationManager1), UsernamePasswordAuthenticationFilter.class);
 
-		http.addFilterBefore(this.customAuthenticationFilter(http, authenticationManager1), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(customAuthenticationFilter(http), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
 
-	public CustomAuthenticationFilter customAuthenticationFilter(HttpSecurity http, AuthenticationManager authenticationManager) {
+	// public CustomAuthenticationFilter customAuthenticationFilter(HttpSecurity http, AuthenticationManager authenticationManager) {
+	// 	CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(http);
+	// 	customAuthenticationFilter.setAuthenticationManager(authenticationManager);
+	// 	return customAuthenticationFilter;
+	// }
+
+	public CustomAuthenticationFilter customAuthenticationFilter(HttpSecurity http) {
+		List<AuthenticationProvider> providers1 = List.of(new DaoAuthenticationProvider());
+		ProviderManager parent = new ProviderManager(providers1);
+		List<AuthenticationProvider> providers2 = List.of(new CustomAuthenticationProvider());
+		ProviderManager providerManager = new ProviderManager(providers2, parent);
+
 		CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(http);
-		customAuthenticationFilter.setAuthenticationManager(authenticationManager);
+		customAuthenticationFilter.setAuthenticationManager(providerManager);
 		return customAuthenticationFilter;
 	}
 
