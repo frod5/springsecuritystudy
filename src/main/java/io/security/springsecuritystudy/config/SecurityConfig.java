@@ -118,8 +118,10 @@ public class SecurityConfig {
 		//
 		// http.addFilterBefore(this.customAuthenticationFilter(http, authenticationManager1), UsernamePasswordAuthenticationFilter.class);
 
-		http.addFilterBefore(customAuthenticationFilter(http), UsernamePasswordAuthenticationFilter.class);
+		// http.addFilterBefore(customAuthenticationFilter(http), UsernamePasswordAuthenticationFilter.class);
 
+
+		http.authenticationProvider(new CustomAuthenticationProvider());
 		return http.build();
 	}
 
