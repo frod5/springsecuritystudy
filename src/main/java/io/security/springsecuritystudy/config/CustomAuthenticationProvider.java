@@ -4,11 +4,20 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
+import io.security.springsecuritystudy.service.UserService;
 
+@Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
+
+	private final UserService userService;
+
+	public CustomAuthenticationProvider(UserService userService) {
+		this.userService = userService;
+	}
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -16,7 +25,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		String loginId = authentication.getName();
 		String password = (String) authentication.getCredentials();
 
-		return new UsernamePasswordAuthenticationToken(loginId, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+		//id 검증
+		UserDetails user = userService.loadUserByUsername(loginId);
+
+		if (user == null) {
+			throw new UsernameNotFoundException("Username not found");
+		}
+
+		return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
 	}
 
 	@Override

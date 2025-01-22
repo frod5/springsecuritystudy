@@ -121,7 +121,6 @@ public class SecurityConfig {
 		// http.addFilterBefore(customAuthenticationFilter(http), UsernamePasswordAuthenticationFilter.class);
 
 
-		http.authenticationProvider(new CustomAuthenticationProvider());
 		return http.build();
 	}
 
@@ -131,26 +130,26 @@ public class SecurityConfig {
 	// 	return customAuthenticationFilter;
 	// }
 
-	public CustomAuthenticationFilter customAuthenticationFilter(HttpSecurity http) {
-		List<AuthenticationProvider> providers1 = List.of(new DaoAuthenticationProvider());
-		ProviderManager parent = new ProviderManager(providers1);
-		List<AuthenticationProvider> providers2 = List.of(new CustomAuthenticationProvider());
-		ProviderManager providerManager = new ProviderManager(providers2, parent);
+	// public CustomAuthenticationFilter customAuthenticationFilter(HttpSecurity http) {
+	// 	List<AuthenticationProvider> providers1 = List.of(new DaoAuthenticationProvider());
+	// 	ProviderManager parent = new ProviderManager(providers1);
+	// 	List<AuthenticationProvider> providers2 = List.of(new CustomAuthenticationProvider());
+	// 	ProviderManager providerManager = new ProviderManager(providers2, parent);
+	//
+	// 	CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(http);
+	// 	customAuthenticationFilter.setAuthenticationManager(providerManager);
+	// 	return customAuthenticationFilter;
+	// }
 
-		CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(http);
-		customAuthenticationFilter.setAuthenticationManager(providerManager);
-		return customAuthenticationFilter;
-	}
 
 
-
-	@Bean
+	/*@Bean
 	public UserDetailsService userDetailsService() {
 		UserDetails user = User.withUsername("user")
 			.password("{noop}1111")
 			.roles("ROLES_USER")
 			.build();
 		return new InMemoryUserDetailsManager(user);
-	}
+	}*/
 
 }
