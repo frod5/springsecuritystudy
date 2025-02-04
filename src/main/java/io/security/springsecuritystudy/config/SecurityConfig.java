@@ -125,11 +125,14 @@ public class SecurityConfig {
 		http.csrf(AbstractHttpConfigurer::disable);
 
 		// 동시 세션 제어
-		http.sessionManagement(session -> session.invalidSessionUrl("/invalidSessionUrl")
+		http.sessionManagement(session -> session
+			// .sessionFixation(sessionFixation -> {sessionFixation.changeSessionId();}) 세션 고정 공격 보호 default changeSessionId()
+			.invalidSessionUrl("/invalidSessionUrl")
 			.maximumSessions(1)
 			.maxSessionsPreventsLogin(false)  // false -> 마지막 사용자 세션만료, true 초과 세션 요청 시 인증 차단.
 			.expiredUrl("/expiredUrl")
 		);
+
 
 		return http.build();
 	}
