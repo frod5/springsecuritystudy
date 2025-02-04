@@ -34,6 +34,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -138,24 +141,26 @@ public class SecurityConfig {
 			.expiredUrl("/expiredUrl")
 		);
 
-		http.exceptionHandling(exception -> {
-			exception.authenticationEntryPoint(new AuthenticationEntryPoint() {
-				@Override
-				public void commence(HttpServletRequest request, HttpServletResponse response,
-					AuthenticationException authException) throws IOException, ServletException {
-					System.out.println(authException.getMessage());
-					response.sendRedirect("/login"); // 시큐리티가 로그인페이지를 만들어주지 않음.
-				}
-			});
-			exception.accessDeniedHandler(new AccessDeniedHandler() {
-				@Override
-				public void handle(HttpServletRequest request, HttpServletResponse response,
-					AccessDeniedException accessDeniedException) throws IOException, ServletException {
-					System.out.println(accessDeniedException.getMessage());
-					response.sendRedirect("/denied");
-				}
-			});
-		});
+		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+
+		// http.exceptionHandling(exception -> {
+		// 	exception.authenticationEntryPoint(new AuthenticationEntryPoint() {
+		// 		@Override
+		// 		public void commence(HttpServletRequest request, HttpServletResponse response,
+		// 			AuthenticationException authException) throws IOException, ServletException {
+		// 			System.out.println(authException.getMessage());
+		// 			response.sendRedirect("/login"); // 시큐리티가 로그인페이지를 만들어주지 않음.
+		// 		}
+		// 	});
+		// 	exception.accessDeniedHandler(new AccessDeniedHandler() {
+		// 		@Override
+		// 		public void handle(HttpServletRequest request, HttpServletResponse response,
+		// 			AccessDeniedException accessDeniedException) throws IOException, ServletException {
+		// 			System.out.println(accessDeniedException.getMessage());
+		// 			response.sendRedirect("/denied");
+		// 		}
+		// 	});
+		// });
 
 
 		return http.build();
@@ -188,6 +193,21 @@ public class SecurityConfig {
 			.build();
 		return new InMemoryUserDetailsManager(user);
 	}*/
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.addAllowedOrigin("http://localhost:8080");
+		configuration.addAllowedOrigin("http://localhost:3000");
+		configuration.addAllowedHeader("*");
+		configuration.addAllowedMethod("*");
+		configuration.setAllowCredentials(true);
+		configuration.setMaxAge(3600L);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
 
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
