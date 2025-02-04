@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -24,7 +25,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -127,13 +130,32 @@ public class SecurityConfig {
 
 		// 동시 세션 제어
 		http.sessionManagement(session -> session
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 생성 전략
+			// .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 생성 전략
 			// .sessionFixation(sessionFixation -> {sessionFixation.changeSessionId();}) 세션 고정 공격 보호 default changeSessionId()
 			.invalidSessionUrl("/invalidSessionUrl")
 			.maximumSessions(1)
 			.maxSessionsPreventsLogin(false)  // false -> 마지막 사용자 세션만료, true 초과 세션 요청 시 인증 차단.
 			.expiredUrl("/expiredUrl")
 		);
+
+		http.exceptionHandling(exception -> {
+			exception.authenticationEntryPoint(new AuthenticationEntryPoint() {
+				@Override
+				public void commence(HttpServletRequest request, HttpServletResponse response,
+					AuthenticationException authException) throws IOException, ServletException {
+					System.out.println(authException.getMessage());
+					response.sendRedirect("/login"); // 시큐리티가 로그인페이지를 만들어주지 않음.
+				}
+			});
+			exception.accessDeniedHandler(new AccessDeniedHandler() {
+				@Override
+				public void handle(HttpServletRequest request, HttpServletResponse response,
+					AccessDeniedException accessDeniedException) throws IOException, ServletException {
+					System.out.println(accessDeniedException.getMessage());
+					response.sendRedirect("/denied");
+				}
+			});
+		});
 
 
 		return http.build();

@@ -62,4 +62,9 @@ public class IndexController {
 	public String expiredUrl() {
 		return "expiredUrl";
 	}
+
+	@GetMapping("/denied")
+	public String denied() {
+		return "denied";
+	}
 }
