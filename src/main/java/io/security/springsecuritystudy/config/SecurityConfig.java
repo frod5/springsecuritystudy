@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -126,6 +127,7 @@ public class SecurityConfig {
 
 		// 동시 세션 제어
 		http.sessionManagement(session -> session
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 생성 전략
 			// .sessionFixation(sessionFixation -> {sessionFixation.changeSessionId();}) 세션 고정 공격 보호 default changeSessionId()
 			.invalidSessionUrl("/invalidSessionUrl")
 			.maximumSessions(1)
