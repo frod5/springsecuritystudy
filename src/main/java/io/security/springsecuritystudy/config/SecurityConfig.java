@@ -162,6 +162,9 @@ public class SecurityConfig {
 		// 	});
 		// });
 
+		//csrf
+		http.csrf(AbstractHttpConfigurer::disable);
+
 
 		return http.build();
 	}
