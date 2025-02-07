@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.security.springsecuritystudy.annotation.IsAdmin;
+import io.security.springsecuritystudy.annotation.IsUser;
 import io.security.springsecuritystudy.service.DataService;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 
 @RestController
 public class MethodController {
@@ -79,6 +85,49 @@ public class MethodController {
 	public Map<String, User> readMap() {
 		return dataService.readMap();
 	}
+
+	@GetMapping("/user/secured")
+	@Secured("ROLE_USER")
+	public String secured() {
+		return "secured";
+	}
+
+	@GetMapping("/user/jsr")
+	@RolesAllowed("USER")
+	public String jsr() {
+		return "jsr";
+	}
+
+	@GetMapping("/permitAll")
+	@PermitAll
+	public String permitAll() {
+		return "permitAll";
+	}
+
+	@GetMapping("/denyAll")
+	@DenyAll
+	public String denyAll() {
+		return "denyAll";
+	}
+
+	@GetMapping("/isUser")
+	@IsUser
+	public String isUser() {
+		return "isUser";
+	}
+
+	@GetMapping("/isAdmin")
+	@IsAdmin
+	public String isAdmin() {
+		return "isAdmin";
+	}
+
+	@GetMapping("/customIsUser")
+	@PreAuthorize("@myAuthorizer.isUser(#root)")
+	public String customIsUser() {
+		return "customIsUser";
+	}
+
 
 	public record User(String owner, boolean isSecure) {
 	}
