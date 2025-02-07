@@ -67,4 +67,9 @@ public class IndexController {
 	public String denied() {
 		return "denied";
 	}
+
+	@GetMapping("/oauth/test")
+	public String oauth() {
+		return "oauth";
+	}
 }

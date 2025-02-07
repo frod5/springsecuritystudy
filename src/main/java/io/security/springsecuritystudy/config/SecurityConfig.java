@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -181,6 +182,18 @@ public class SecurityConfig {
 		//csrf
 		http.csrf(AbstractHttpConfigurer::disable);
 
+
+		return http.build();
+	}
+
+	@Bean
+	@Order(1)
+	public SecurityFilterChain securityFilterChain2(HttpSecurity http, ApplicationContext context) throws Exception {
+
+		http.securityMatchers(matchers -> matchers.requestMatchers("/api/**", "/oauth/**"));
+		http.authorizeHttpRequests(auth -> {
+			auth.anyRequest().permitAll();
+		});
 
 		return http.build();
 	}
