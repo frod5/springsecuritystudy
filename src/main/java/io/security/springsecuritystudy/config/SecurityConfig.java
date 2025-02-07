@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.boot.autoconfigure.security.servlet.StaticResourceRequest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,6 +62,7 @@ public class SecurityConfig {
 		// WebExpressionAuthorizationManager autorizationManager = new WebExpressionAuthorizationManager("@customWebSecurity.check(authentication, request)");
 
 		http.authorizeHttpRequests(auth -> {
+			auth.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
 			auth.requestMatchers("/security/**").authenticated();
 			auth.requestMatchers("/anonymous").hasRole("GUEST");
 
