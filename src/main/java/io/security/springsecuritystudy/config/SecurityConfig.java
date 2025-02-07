@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
@@ -28,6 +29,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.expression.DefaultHttpSecurityExpressionHandler;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -48,10 +51,23 @@ import jakarta.servlet.http.HttpSession;
 public class SecurityConfig {
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, ApplicationContext context) throws Exception {
+
+		// DefaultHttpSecurityExpressionHandler expressionHandler = new DefaultHttpSecurityExpressionHandler();
+		// expressionHandler.setApplicationContext(context);
+		//
+		// WebExpressionAuthorizationManager autorizationManager = new WebExpressionAuthorizationManager("@customWebSecurity.check(authentication, request)");
+
 		http.authorizeHttpRequests(auth -> {
 			auth.requestMatchers("/security/**").authenticated();
 			auth.requestMatchers("/anonymous").hasRole("GUEST");
+
+			//custom 표현식
+			// auth.requestMatchers("/user/{name}").access(new WebExpressionAuthorizationManager("#name == authentication.name"));
+			// auth.requestMatchers("/resource/db").access(new WebExpressionAuthorizationManager("hasAuthority('ROLE_DB') or hasAuthority('ROLE_ADMIN')"));
+			// auth.requestMatchers("/custom/test").access(autorizationManager);
+			// auth.requestMatchers(new CustomRequestMatcher("/custom/test2")).hasRole("GUEST");
+
 			auth.requestMatchers("/**").permitAll();
 		});
 		http.formLogin(form -> form
