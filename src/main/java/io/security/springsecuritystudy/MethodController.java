@@ -1,13 +1,28 @@
 package io.security.springsecuritystudy;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.security.springsecuritystudy.service.DataService;
 
 @RestController
 public class MethodController {
+
+	private final DataService dataService;
+
+	public MethodController(DataService dataService) {
+		this.dataService = dataService;
+	}
 
 	@GetMapping("/admin")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -45,5 +60,26 @@ public class MethodController {
 		return new User(owner, "Y".equals(secure));
 	}
 
-	public record User(String owner, boolean isSecure) {}
+	@PostMapping("/writeList")
+	public List<User> writeList(@RequestBody List<User> users) {
+		return dataService.writeList(users);
+	}
+
+	@PostMapping("/writeMap")
+	public Map<String, User> writeMap(@RequestBody List<User> users) {
+		return dataService.writeMap(users.stream().collect(Collectors.toMap(user -> user.owner, user -> user)));
+	}
+
+	@GetMapping("/readList")
+	public List<User> readList() {
+		return dataService.readList();
+	}
+
+	@GetMapping("/readMap")
+	public Map<String, User> readMap() {
+		return dataService.readMap();
+	}
+
+	public record User(String owner, boolean isSecure) {
+	}
 }
