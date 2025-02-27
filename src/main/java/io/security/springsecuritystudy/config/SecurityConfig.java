@@ -192,6 +192,7 @@ public class SecurityConfig {
 		return http.build();
 	}
 
+	//다중 보안 설정
 	@Bean
 	@Order(1)
 	public SecurityFilterChain securityFilterChain2(HttpSecurity http, ApplicationContext context) throws Exception {
